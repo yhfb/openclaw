@@ -1,9 +1,9 @@
 name: Run OpenClaw Bot (Groq Edition)
 
 on:
-  workflow_dispatch: # يسمح لك بتشغيل البوت يدوياً من صفحة Actions
+  workflow_dispatch:
   schedule:
-    - cron: '0 */5 * * *' # يعمل تلقائياً كل 5 ساعات
+    - cron: '0 */5 * * *'
 
 jobs:
   run-bot:
@@ -20,8 +20,7 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
+        # تمت إزالة تحديد النسخة من هنا لحل التعارض مع package.json
 
       - name: Cache pnpm dependencies
         uses: actions/cache@v4
@@ -40,16 +39,11 @@ jobs:
       - name: Run the bot
         run: pnpm start
         env:
-          # إعدادات Groq كبديل لـ OpenAI
           OPENAI_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENAI_BASE_URL: https://api.groq.com/openai/v1
           OPENAI_MODEL: llama-3.3-70b-versatile
-          
-          # مفاتيح المنصات (يجب إضافتها في Settings > Secrets)
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          
-          # إعدادات البيئة لضمان الاستقرار
           NODE_ENV: production
           OPENCLAW_RUNNER_LOG: 1
-          OPENCLAW_SKIP_TUI: 1 # لتجنب أخطاء الواجهة الرسومية في سيرفرات GitHub
+          OPENCLAW_SKIP_TUI: 1
