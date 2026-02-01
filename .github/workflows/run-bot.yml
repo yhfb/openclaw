@@ -61,6 +61,27 @@ jobs:
                 "dmPolicy": "open",
                 "allowFrom": ["*"]
               }
+            },
+            "agents": {
+              "defaults": {
+                "model": {
+                  "primary": "openai/llama-3.3-70b-versatile"
+                }
+              }
+            },
+            "models": {
+              "providers": {
+                "openai": {
+                  "baseUrl": "https://api.groq.com/openai/v1",
+                  "apiKey": "${{ secrets.GROQ_API_KEY }}",
+                  "models": [
+                    {
+                      "id": "llama-3.3-70b-versatile",
+                      "name": "Llama 3.3 70B"
+                    }
+                  ]
+                }
+              }
             }
           }
           EOF
@@ -68,11 +89,11 @@ jobs:
       - name: Run the bot
         run: |
           pnpm start gateway --allow-unconfigured > gateway.log 2>&1 &
-          echo "Waiting for Gateway to start..."
-          sleep 20
-          echo "--- Gateway Logs ---"
+          echo "Waiting for Bot to initialize (45 seconds )..."
+          sleep 45
+          echo "--- Gateway & Bot Logs ---"
           cat gateway.log
-          echo "--- Checking Status ---"
+          echo "--- Final Status Check ---"
           pnpm start status --all
         env:
           OPENAI_API_KEY: ${{ secrets.GROQ_API_KEY }}
