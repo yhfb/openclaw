@@ -49,8 +49,11 @@ jobs:
               "discord": {
                 "enabled": true,
                 "token": "${{ secrets.DISCORD_BOT_TOKEN }}",
-                "dmPolicy": "open",
-                "allowFrom": ["*"]
+                "dm": {
+                  "enabled": true,
+                  "policy": "open",
+                  "allowFrom": ["*"]
+                }
               },
               "telegram": {
                 "enabled": true,
@@ -63,7 +66,14 @@ jobs:
           EOF
 
       - name: Run the bot
-        run: pnpm start gateway --allow-unconfigured & sleep 15 && pnpm start status
+        run: |
+          pnpm start gateway --allow-unconfigured > gateway.log 2>&1 &
+          echo "Waiting for Gateway to start..."
+          sleep 20
+          echo "--- Gateway Logs ---"
+          cat gateway.log
+          echo "--- Checking Status ---"
+          pnpm start status --all
         env:
           OPENAI_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENAI_BASE_URL: https://api.groq.com/openai/v1
@@ -73,3 +83,4 @@ jobs:
           NODE_ENV: production
           OPENCLAW_RUNNER_LOG: 1
           OPENCLAW_SKIP_TUI: 1
+          DEBUG: "openclaw:*"
